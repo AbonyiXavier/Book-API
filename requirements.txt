@@ -1,0 +1,19 @@
+# The requirements.txt file contains all the dependencies of the project
+
+flask
+psycopg2-binary
+Flask-SQLAlchemy
+flask-bcrypt
+python-dotenv
+flask-session
+flask-cors
+
+# Short explanation of the dependencies:
+
+# flask is the Python web framework we are gonna use.
+
+# psycopg2-binary is the driver to make the connection with the Postgres database.
+
+# Flask-SQLAlchemy is the ORM to make the queries to the database.
+
+
