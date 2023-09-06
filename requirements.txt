@@ -1,10 +1,12 @@
 # The requirements.txt file contains all the dependencies of the project
 
 flask
-psycopg2-binary
 Flask-SQLAlchemy
-flask-bcrypt
+sqlalchemy
 python-dotenv
+alembic
+psycopg2-binary
+flask-bcrypt
 flask-session
 flask-cors
 
