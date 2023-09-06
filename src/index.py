@@ -2,7 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from dotenv import load_dotenv
-from config.db import db
+from domain.user.models.user_model import db
 
 # Load environment variables from .env file
 load_dotenv()
