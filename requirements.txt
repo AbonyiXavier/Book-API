@@ -9,6 +9,7 @@ psycopg2-binary
 flask-bcrypt
 flask-session
 flask-cors
+Flask-JWT-Extended
 
 # Short explanation of the dependencies:
 
@@ -18,4 +19,8 @@ flask-cors
 
 # Flask-SQLAlchemy is the ORM to make the queries to the database.
 
+# alembic a database migration tool for SQLAlchemy
 
+# flask-bcrypt to encrypt and compare the password during signup and login process
+
+# Flask-JWT-Extended for handling JWT token during signup and login process
