@@ -12,6 +12,7 @@ def create_app():
 
     # Set the SQLAlchemy database URI here
     app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL')
+    app.config['SECRET_KEY'] = environ.get('SECRET_KEY')
 
     db.init_app(app) 
 

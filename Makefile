@@ -13,4 +13,7 @@ install:
 migrate:
 	$(ALEMBIC) upgrade head
 
+alembic:
+	alembic init alembic
+
 # Add more targets and commands as needed
