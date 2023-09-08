@@ -6,7 +6,8 @@ from sqlalchemy import pool
 
 from alembic import context
 
-from src.domain.user.models.user_model import User
+from src.config import db
+
 
 # Fetch the database URL from the environment variables
 database_url = os.environ.get("DATABASE_URL")
@@ -24,7 +25,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = User.metadata
+target_metadata = db.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

@@ -1,9 +1,10 @@
-from flask import Flask, Blueprint, request, jsonify, make_response, session
+from flask import Flask, Blueprint, request, jsonify, make_response
 from common.constant import PAGINATION_ARGS, STATUS_CODES
 from domain.user.models.user_model import User
 from flask_bcrypt import Bcrypt
 from domain.user.models.user_model import db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+import uuid
 
 
 app = Flask(__name__)
@@ -91,12 +92,15 @@ def signup():
             )
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        # Generate a unique jti
+        jti = str(uuid.uuid4())
 
         user = User(
             first_name=first_name,
             last_name=last_name,
             email=email,
             password=hashed_password,
+            jti=jti,
         )
         db.session.add(user)
         db.session.commit()
@@ -181,15 +185,28 @@ def login():
         )
 
 
-# @TODO: save the jti ot the user database as 
-# jti = db.Column(db.String(36), nullable=False, index=True) to be able to revoke it
-@user_routes.route("/logout", methods=["DELETE"])
+'''
+    User Logout
+'''
+
+@user_routes.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
     try:
-        # Add the old token to the revoked tokens list
-        jti = get_jwt()["jti"]
+         # Get the current user's identity
+        current_user = get_jwt_identity()
+        user_id = current_user.get("id")
+
+        # Generate a unique jti for this logout event
+        jti = str(uuid.uuid4())
+
+        # Add the jti to the revoked tokens list
         revoked_tokens.add(jti)
+
+        # Optionally, you can save the jti to the user model as well
+        user = User.query.filter_by(id=user_id).first()
+        user.jti = jti
+        db.session.commit()
 
         return make_response(
             jsonify({"message": "Logout successful"}), STATUS_CODES["ok"]
