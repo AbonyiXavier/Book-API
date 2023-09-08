@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, request, jsonify, make_response
 from common.constant import PAGINATION_ARGS, STATUS_CODES
 from domain.user.models.user_model import User
 from flask_bcrypt import Bcrypt
-from domain.user.models.user_model import db
+from config import db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 import uuid
 
@@ -84,9 +84,9 @@ def signup():
         email = request.json["email"]
         password = request.json["password"]
 
-        user_exists = User.query.filter_by(email=email).first()
+        email_exists = User.query.filter_by(email=email).first()
 
-        if user_exists:
+        if email_exists:
             return make_response(
                 jsonify({"error": "Email already exists"}), STATUS_CODES["conflict"]
             )

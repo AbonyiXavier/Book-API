@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, make_response
 from common.constant import PAGINATION_ARGS, STATUS_CODES
-from domain.book.models.book_model import Book
+from domain.book.models.book_model import Book, Currency
 from flask_jwt_extended import jwt_required, get_jwt_identity
-
+from config import db
 
 # Create a Blueprint for book_routes
 book_routes = Blueprint("book_routes", __name__)
@@ -59,3 +59,73 @@ def get_books():
         return make_response(
             jsonify({"message": error_message}), STATUS_CODES["internal_server_error"]
         )
+
+
+"""
+  Create book signup
+  >>> title, author, isbn, price
+"""
+
+@book_routes.route("/book", methods=["POST"])
+@jwt_required()
+def create_book():
+    try:
+        title = request.json["title"]
+        author = request.json["author"]
+        isbn = request.json["isbn"]
+        price = request.json["price"]
+
+        # Check if 'currency' is provided in the request JSON
+        if "currency" in request.json:
+            currency = request.json["currency"]
+        else:
+            # Set the default currency to 'KR'
+            currency = Currency.KR    
+
+        title_exists = Book.query.filter_by(title=title).first()
+
+        if title_exists:
+            return make_response(
+                jsonify({"error": "Book title already exists"}), STATUS_CODES["conflict"]
+            )
+        
+        isbn_exists = Book.query.filter_by(isbn=isbn).first()
+
+        if isbn_exists:
+            return make_response(
+                jsonify({"error": "Book isbn number already exists"}), STATUS_CODES["conflict"]
+            )
+        
+        book = Book(
+            title=title,
+            author=author,
+            isbn=isbn,
+            price=price,
+            currency=currency
+        )
+        db.session.add(book)
+        db.session.commit()
+
+        book_dict = {
+            "id": book.id,
+            "title": book.title,
+            "author": book.author,
+            "isbn": book.isbn,
+            "price": book.price,
+        }
+
+        return make_response(
+            jsonify(
+                {
+                    "message": "Your book has been created!",
+                    "data": book_dict,
+                }
+            ),
+            STATUS_CODES["created"],
+        )
+    except Exception as e:
+        error_message = f"Error creating book: {str(e)}"
+        return make_response(
+            jsonify({"message": error_message}), STATUS_CODES["internal_server_error"]
+        )
+   
