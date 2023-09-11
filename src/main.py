@@ -14,7 +14,7 @@ app.register_blueprint(user_routes)
 app.register_blueprint(book_routes)
 
 @app.route(f"{API_PREFIX_URL}/")
-def index_port():
+def index():
     return 'Welcome API 👈👈👈'
 
 if __name__ == '__main__':
