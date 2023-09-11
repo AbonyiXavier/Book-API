@@ -1,9 +1,9 @@
 from flask import Flask, Blueprint, request, jsonify, make_response
-from common.constant import PAGINATION_ARGS, STATUS_CODES
+from common.constant import API_PREFIX_URL, PAGINATION_ARGS, STATUS_CODES
 from domain.user.models.user_model import User
 from flask_bcrypt import Bcrypt
 from config import db
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 import uuid
 
 
@@ -22,7 +22,7 @@ user_routes = Blueprint("user_routes", __name__)
   >>> endpoint : /users?page=2&per_page=10
 """
 
-@user_routes.route("/users", methods=["GET"])
+@user_routes.route(f"{API_PREFIX_URL}/users", methods=["GET"])
 @jwt_required()
 def get_users():
     try:
@@ -76,7 +76,7 @@ def get_users():
 """
 
 
-@user_routes.route("/signup", methods=["POST"])
+@user_routes.route(f"{API_PREFIX_URL}/signup", methods=["POST"])
 def signup():
     try:
         first_name = request.json["first_name"]
@@ -88,7 +88,7 @@ def signup():
 
         if email_exists:
             return make_response(
-                jsonify({"error": "Email already exists"}), STATUS_CODES["conflict"]
+                jsonify({"message": "Email already exists"}), STATUS_CODES["conflict"]
             )
 
         hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
@@ -136,7 +136,7 @@ def signup():
  >>> email, password
 """
 
-@user_routes.route("/login", methods=["POST"])
+@user_routes.route(f"{API_PREFIX_URL}/login", methods=["POST"])
 def login():
     try:
         email = request.json["email"]
@@ -146,7 +146,7 @@ def login():
 
         if not user:
             return make_response(
-                jsonify({"error": "invalid credentials provided"}),
+                jsonify({"message": "invalid credentials provided"}),
                 STATUS_CODES["un_authorized"],
             )
 
@@ -154,7 +154,7 @@ def login():
 
         if not password_match:
             return make_response(
-                jsonify({"error": "invalid credentials provided"}),
+                jsonify({"message": "invalid credentials provided"}),
                 STATUS_CODES["un_authorized"],
             )
 
@@ -189,7 +189,7 @@ def login():
     User Logout
 '''
 
-@user_routes.route("/logout", methods=["POST"])
+@user_routes.route(f"{API_PREFIX_URL}/logout", methods=["POST"])
 @jwt_required()
 def logout():
     try:

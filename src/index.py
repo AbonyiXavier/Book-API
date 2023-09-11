@@ -1,16 +1,19 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from os import environ
 from dotenv import load_dotenv
+from common.constant import API_PREFIX_URL
 from domain.user.models.user_model import db
 from flask_jwt_extended import JWTManager
 from datetime import timedelta
+from flask_cors import CORS
 
 # Load environment variables from .env file
 load_dotenv()
 
 def create_app():
     app = Flask(__name__)
+
+    CORS(app, resources={rf"{API_PREFIX_URL}/*": {"origins": "*"}}) # set cors
 
     # Set .env variables
     app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL')

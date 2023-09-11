@@ -13,3 +13,7 @@ STATUS_CODES = {
     'un_authorized': 401,
     'internal_server_error': 500,
 }
+
+API_PREFIX_URL = '/api/v1'
+
+BOOK_NOT_FOUND_MESSAGE = 'Book not found'

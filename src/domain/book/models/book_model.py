@@ -20,7 +20,7 @@ class Book(db.Model):
     id = db.Column(db.String(32), primary_key=True, unique=True, default=get_uuid)
     title = db.Column(db.String(100), nullable=False)
     author = db.Column(db.String(100), nullable=False)
-    isbn = db.Column(db.String(32), primary_key=True)
+    isbn = db.Column(db.String(32), unique=True)
     price = db.Column(db.Float)
     currency = db.Column(
         Enum(Currency, create_constraint=True, native_enum=False),

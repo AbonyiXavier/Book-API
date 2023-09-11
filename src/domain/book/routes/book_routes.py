@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from common.constant import PAGINATION_ARGS, STATUS_CODES
+from common.constant import API_PREFIX_URL, BOOK_NOT_FOUND_MESSAGE, PAGINATION_ARGS, STATUS_CODES
 from domain.book.models.book_model import Book, Currency
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from config import db
@@ -13,7 +13,7 @@ book_routes = Blueprint("book_routes", __name__)
   >>> endpoint : /books?page=2&per_page=10
 """
 
-@book_routes.route("/books", methods=["GET"])
+@book_routes.route(f"{API_PREFIX_URL}/book", methods=["GET"])
 @jwt_required()
 def get_books():
     try:
@@ -66,7 +66,7 @@ def get_books():
   >>> title, author, isbn, price
 """
 
-@book_routes.route("/book", methods=["POST"])
+@book_routes.route(f"{API_PREFIX_URL}/book", methods=["POST"])
 @jwt_required()
 def create_book():
     try:
@@ -86,14 +86,14 @@ def create_book():
 
         if title_exists:
             return make_response(
-                jsonify({"error": "Book title already exists"}), STATUS_CODES["conflict"]
+                jsonify({"message": "Book title already exists"}), STATUS_CODES["conflict"]
             )
         
         isbn_exists = Book.query.filter_by(isbn=isbn).first()
 
         if isbn_exists:
             return make_response(
-                jsonify({"error": "Book isbn number already exists"}), STATUS_CODES["conflict"]
+                jsonify({"message": "Book isbn number already exists"}), STATUS_CODES["conflict"]
             )
         
         book = Book(
@@ -106,19 +106,11 @@ def create_book():
         db.session.add(book)
         db.session.commit()
 
-        book_dict = {
-            "id": book.id,
-            "title": book.title,
-            "author": book.author,
-            "isbn": book.isbn,
-            "price": book.price,
-        }
-
         return make_response(
             jsonify(
                 {
                     "message": "Your book has been created!",
-                    "data": book_dict,
+                    "data": book.json(),
                 }
             ),
             STATUS_CODES["created"],
@@ -129,3 +121,106 @@ def create_book():
             jsonify({"message": error_message}), STATUS_CODES["internal_server_error"]
         )
    
+
+"""
+  Get book by id 
+"""
+
+@book_routes.route(f"{API_PREFIX_URL}/book/<string:id>", methods=["GET"])
+@jwt_required()
+def get_book(id):
+    try:
+        book = validate_and_get_book_by(id)
+
+        if book is None:
+            return make_response(
+                jsonify({"message": BOOK_NOT_FOUND_MESSAGE}), STATUS_CODES["not_found"]
+            )
+        
+        return make_response(
+            jsonify({"message": "Book fetched successfully!", "data": book.json()}),
+            STATUS_CODES["ok"],
+        )
+    except Exception as e:
+        error_message = f"Error fetching book: {str(e)}"
+        return make_response(
+            jsonify({"message": error_message}), STATUS_CODES["internal_server_error"]
+        )
+    
+
+"""
+  Delete book by id 
+"""   
+
+@book_routes.route(f"{API_PREFIX_URL}/book/<string:id>", methods=["DELETE"])
+@jwt_required()
+def delete_book(id):
+    try:
+        book = validate_and_get_book_by(id)
+
+        if book is None:
+            return make_response(
+                jsonify({"message": BOOK_NOT_FOUND_MESSAGE}), STATUS_CODES["not_found"]
+            )
+        
+        db.session.delete(book)
+        db.session.commit()
+
+        return make_response(
+            jsonify({"message": "Book deleted successfully!", "data": book.json()}),
+            STATUS_CODES["ok"],
+        )
+    except Exception as e:
+        error_message = f"Error deleting book: {str(e)}"
+        return make_response(
+            jsonify({"message": error_message}), STATUS_CODES["internal_server_error"]
+        )
+    
+
+
+"""
+  update book by id 
+"""   
+
+@book_routes.route(f"{API_PREFIX_URL}/book/<string:id>", methods=["PATCH"])
+@jwt_required()
+def update_book(id):
+    try:
+        if not request.json:
+            return make_response(
+                jsonify({"message": "input field(s) required"}), STATUS_CODES["bad_request"]
+            )
+        
+        book = validate_and_get_book_by(id)
+
+        if book is None:
+            return make_response(
+                jsonify({"message": BOOK_NOT_FOUND_MESSAGE}), STATUS_CODES["not_found"]
+            )
+        
+        book.title = request.json.get('title', book.title)
+        book.author = request.json.get('author', book.author)
+        book.isbn = request.json.get('isbn', book.isbn)
+        book.price = request.json.get('price', book.price)
+        book.currency = request.json.get('currency', book.currency)
+        db.session.commit()
+
+        return make_response(
+            jsonify({"message": "Book updated successfully!", "data": book.json()}),
+            STATUS_CODES["ok"],
+        )
+    except Exception as e:
+        error_message = f"Error updating book: {str(e)}"
+        return make_response(
+            jsonify({"message": error_message}), STATUS_CODES["internal_server_error"]
+        )
+    
+
+
+def validate_and_get_book_by(id):
+    book = Book.query.get(id)
+
+    if not book:
+        return None
+        
+    return book
