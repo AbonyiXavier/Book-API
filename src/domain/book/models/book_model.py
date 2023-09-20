@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import DateTime, event
 from uuid import uuid4
-from config import db
+from extensions import db
 from flask_jwt_extended import get_jwt_identity
 from enum import Enum as PyEnum
 from sqlalchemy import Enum

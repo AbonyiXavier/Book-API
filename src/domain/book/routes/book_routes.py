@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, make_response
-from common.constant import API_PREFIX_URL, BOOK_NOT_FOUND_MESSAGE, PAGINATION_ARGS, STATUS_CODES
-from domain.book.models.book_model import Book, Currency
+from src.common.constant import API_PREFIX_URL, BOOK_NOT_FOUND_MESSAGE, PAGINATION_ARGS, STATUS_CODES
+from src.domain.book.models.book_model import Book, Currency
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from config import db
+from extensions import db
 
 # Create a Blueprint for book_routes
 book_routes = Blueprint("book_routes", __name__)

@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import DateTime, event
 from uuid import uuid4
-from config import db
+from extensions import db
 
 def get_uuid():
     return uuid4().hex

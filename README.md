@@ -1,33 +1,37 @@
 # BOOK-API
 
 
-## How to set up
-How to install dependencies for the project for `Mac` users
+### Using the Makefile for Testing
+How to run all tests locally
 
-```bash
-make install
-```
+1. `make install` - Installs dependencies.
+2. `make dev` - Run the server
+3. `make migrate` - create a migration from your models
+4. `make apply-migrate` - Apply the migration to the database
+5. `make docker-remove` - To stops and removes the Docker containers defined in your Docker Compose configuration
+5. `make docker-build` - To builds Docker images for the services defined in your Docker Compose configuration
+5. `docker-run` - To starts the Docker containers defined in your Docker Compose configuration
 
 ## How to updates your database schema when you add or modify fields in your models.
 
-Process 1: `Add a new field to model you want` and open  `alembic.ini` in root directory to Edit the alembic.ini file in the alembic directory to configure your database connection. Modify the sqlalchemy.url parameter to point to your database URI.
+Process 1: `Add a new field to model you want`
 
 Process 2: command format
 
 ```bash
-alembic revision --autogenerate -m "Add new_field to User model"
+flask db migrate -m "Add new_field to User model"
 ```
 
 For example i want to add a new field to an existing user model to be `profile`, User Model can be the `users` representing table name.
 
 ```bash
-alembic revision --autogenerate -m "Add profile to users"
+flask db migrate -m "Add profile to users"
 ```
 
 Process 3: To apply the migration and update the database schema, run the following command:
 
 ```bash
-alembic upgrade head
+flask db upgrade
 ```
 
 
