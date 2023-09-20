@@ -4,7 +4,7 @@ flask
 Flask-SQLAlchemy
 sqlalchemy
 python-dotenv
-alembic
+Flask-Migrate
 psycopg2-binary
 flask-bcrypt
 flask-cors
@@ -18,8 +18,8 @@ Flask-JWT-Extended
 
 # Flask-SQLAlchemy is the ORM to make the queries to the database.
 
-# alembic a database migration tool for SQLAlchemy
+# Flask-Migrate a SQLAlchemy database migrations for Flask applications using Alembic.
 
 # flask-bcrypt to encrypt and compare the password during signup and login process
 
-# Flask-JWT-Extended for handling JWT token during signup and login process
+# Flask-JWT-Extended for handling JWT token during signup and login process.

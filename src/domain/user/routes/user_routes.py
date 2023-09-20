@@ -1,9 +1,9 @@
 from flask import Flask, Blueprint, request, jsonify, make_response
-from common.constant import API_PREFIX_URL, PAGINATION_ARGS, STATUS_CODES
-from domain.user.models.user_model import User
+from src.common.constant import API_PREFIX_URL, PAGINATION_ARGS, STATUS_CODES
+from src.domain.user.models.user_model import User
 from flask_bcrypt import Bcrypt
-from config import db
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from extensions import db
 import uuid
 
 

@@ -1,8 +1,8 @@
 # Define variables
-PYTHON := python
+PYTHON := python3
 PIP := pip
 FLASK := flask
-ALEMBIC := alembic
+DOCKER := docker-compose
 
 # Define targets and commands
 .PHONY: install run migrate
@@ -11,9 +11,19 @@ install:
 	$(PIP) install -r requirements.txt
 
 migrate:
-	$(ALEMBIC) upgrade head
+	$(FLASK) db migrate
 
-alembic:
-	alembic init alembic
+apply-migrate:
+	$(FLASK) db upgrade
 
-# Add more targets and commands as needed
+dev:
+	$(PYTHON) app.py
+
+docker-remove:
+	$(DOCKER) down
+
+docker-build:
+	$(DOCKER) build --no-cache
+
+docker-run:
+	$(DOCKER) up
